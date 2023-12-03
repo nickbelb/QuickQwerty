@@ -37,7 +37,7 @@ const gameBoard=utils.selectObject('.game-board');
 const scoreBoardDetails = utils.selectObject('.score-board-details')
 const restartBtn=utils.selectObject('.restart-btn');
 const cancelBtn=utils.selectObject('.cancel-btn');
-let gameAudio = new Audio('../assets/media/game-music.mp3');
+let gameAudio = new Audio('./assets/media/game-music.mp3');
 let gameOverAudio = new Audio('./assets/media/game-over.mp3');
 let count = 15;
 let timerId;
