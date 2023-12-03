@@ -39,7 +39,7 @@ const restartBtn=utils.selectObject('.restart-btn');
 const cancelBtn=utils.selectObject('.cancel-btn');
 let gameAudio = new Audio('./assets/media/game-music.mp3');
 let gameOverAudio = new Audio('./assets/media/game-over.mp3');
-let count = 15;
+let count = 99;
 let timerId;
 let points = 0;
 let gameWords;
@@ -127,7 +127,7 @@ function showScoreBoard(userWin) {
  
 function restartValues(){
     wordCount.textContent='0';
-    count = 15;
+    count = 99;
     clock.textContent=count;
     points = 0;
     pointsBoard.textContent=points;
