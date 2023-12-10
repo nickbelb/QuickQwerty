@@ -1,6 +1,5 @@
 'use strict';
 
-import { Score } from "./Score.js";
 import * as utils from "./utils.js"
 
 const wordsBoard=utils.selectObject('.word-board');
@@ -29,24 +28,34 @@ const words = [
     'audio', 'school', 'detective', 'hero', 'progress', 'winter', 'passion',
     'rebel', 'amber', 'jacket', 'article', 'paradox', 'social', 'resort', 'escape'
    ];
-const scoreBoardDate=utils.selectObject('.date');
-const scoreBoardPoints=utils.selectObject('.points');
-const scoreBoardPercentage=utils.selectObject('.percentage');
-const startGameBoard =utils.selectObject('.start-game-board');
-const gameBoard=utils.selectObject('.game-board');
+const scoreBoardDate = utils.selectObject('.date');
+const scoreBoardPoints = utils.selectObject('.points');
+const scoreBoardPercentage = utils.selectObject('.percentage');
+const startGameBoard = utils.selectObject('.start-game-board');
+const gameBoard = utils.selectObject('.game-board');
 const scoreBoardDetails = utils.selectObject('.score-board-details')
-const restartBtn=utils.selectObject('.restart-btn');
-const cancelBtn=utils.selectObject('.cancel-btn');
+const restartBtn = utils.selectObject('.restart-btn');
+const cancelBtn = utils.selectObject('.cancel-btn');
+const highScoreTableBoard = utils.selectObject('.high-scores-board');
+const highScoreTable = utils.selectObject('.high-scores-table');
+const highScoresTableBtn = utils.selectObject('.high-scores-table-btn');
+const wordCount = utils.selectObject('.word-count');
+const hsRestartButton = utils.selectObject('.hs-restart-btn');
+const hsCancelButton = utils.selectObject('.hs-cancel-btn');
+const gameRestartButton = utils.selectObject('.game-restart-btn');
+const hsStartTableBtn = utils.selectObject('.hs-table-btn');
+const noScoreMessage = utils.selectObject('.no-score-message');
+let scoreList=[]
 let gameAudio = new Audio('./assets/media/game-music.mp3');
 let gameOverAudio = new Audio('./assets/media/game-over.mp3');
-let count = 99;
+let count = 20;
 let timerId;
 let points = 0;
 let gameWords;
-const wordCount = utils.selectObject('.word-count');
+
 
 function checkWord(){
-    if(wordsBoard.value===userInput.value){
+    if(wordsBoard.value===(userInput.value).toLowerCase()){
         gameWords.splice(gameWords.indexOf(wordsBoard.value),1);
         points++;
         pointsBoard.textContent=points;
@@ -79,7 +88,7 @@ function startGame(){
 }
 
 function playSound(audio) {
-    audio.play();
+   audio.play();
 }
 
 function stopSound(audio){
@@ -109,6 +118,61 @@ function checkClock(){
     }
 }
 
+function showScoreTable(div,prevWindow) {
+    div.classList.add('hidden');
+    highScoreTableBoard.classList.remove('hidden');
+    if(prevWindow === 'start-game'){
+        hsRestartButton.classList.add('hidden');
+        hsCancelButton.classList.add('margin-right-button-alone')   
+    }
+    else{
+        hsRestartButton.classList.remove('hidden');
+        hsCancelButton.classList.add('margin-right-button-alone-pair')   
+    }
+    showHighScores();
+}
+
+function showHighScores() {
+    highScoreTable.innerHTML="";
+    createTableTitles();
+    if(localStorage.length>0){
+        noScoreMessage.textContent="";
+        scoreList=JSON.parse(localStorage.getItem('array'));
+        scoreList.forEach(scoreObjt => {
+            if(scoreList.indexOf(scoreObjt)<9){
+                const singleScore = document.createElement('tr');
+                const number = document.createElement('td');
+                const highScore = document.createElement('td');
+                const percentage = document.createElement('td');
+                utils.addClassToItems(number,'gradient-color-text')
+                number.textContent=`${scoreList.indexOf(scoreObjt)+1}`;
+                highScore.textContent =`${scoreObjt.score} pts`;
+                percentage.textContent = `${scoreObjt.percentage}%`;
+                utils.addChildToElement(singleScore,number,highScore,percentage);
+                utils.addChildToElement(highScoreTable,singleScore);
+            }
+        });
+    }
+    else{
+        noScoreMessage.textContent='No scores available';
+    }
+}
+
+function createTableTitles() {
+    const tableTitles = document.createElement('tr');
+    const numberTitle = document.createElement('th');
+    const highScoreTitle = document.createElement('th');
+    const percentageTitle = document.createElement('th');
+    utils.addClassToItems(numberTitle,'gradient-color-text');
+    utils.addClassToItems(highScoreTitle,'gradient-color-text');
+    utils.addClassToItems(percentageTitle,'gradient-color-text');
+    numberTitle.textContent='#';
+    highScoreTitle.textContent='Score';
+    percentageTitle.textContent='Percentage';
+    utils.addChildToElement(tableTitles,numberTitle,highScoreTitle,percentageTitle);
+    utils.addChildToElement(highScoreTable,tableTitles);
+}
+
 function showScoreBoard(userWin) {
     gameBoard.classList.add('hidden');
     scoreBoardDetails.classList.remove('hidden');
@@ -117,21 +181,53 @@ function showScoreBoard(userWin) {
         message.textContent='!Congratulations, You Win';
     }else{
         message.classList.add('red');
-        message.textContent='!Sorry, Your time is Up!';
+        message.textContent= 'Game Over';
     }
-    const score = new Score(points,new Date());
-    scoreBoardDate.textContent =`${score.date}`;
-    scoreBoardPoints.textContent = `${score.score}`;
-    scoreBoardPercentage.textContent = `${score.percentage}`;
+
+    const scoreObjt = {
+        date:(new Date).toDateString(),
+        score:points,
+        percentage:parseInt((points*100)/120),
+    }
+    scoreBoardDate.textContent =`${scoreObjt.date}`;
+    scoreBoardPoints.textContent = `${scoreObjt.score} words`;
+    scoreBoardPercentage.textContent = `${scoreObjt.percentage} %`;
+    if(scoreList.length<15){
+        removeScores();
+    }
+    saveScore(scoreObjt);
 }
  
+function saveScore(scoreObj){
+    if(localStorage.length>0){
+        scoreList=JSON.parse(localStorage.getItem('array'));
+        scoreList.push(scoreObj);
+        scoreList.sort((a,b) => {
+            if ( a.score > b.score )return -1;
+            if ( a.score < b.score )return 1;
+            return 0;
+          });
+        localStorage.setItem('array',JSON.stringify(scoreList));
+    }else{
+        scoreList.push(scoreObj);
+        localStorage.setItem('array',JSON.stringify(scoreList));
+    }
+}
+
+function removeScores(){
+    scoreList.pop();
+}
+
 function restartValues(){
-    wordCount.textContent='0';
-    count = 99;
-    clock.textContent=count;
+    stopSound(gameOverAudio);
+    stopSound(gameAudio);
+    clearInterval(timerId);
+    count = 20;
     points = 0;
-    pointsBoard.textContent=points;
     copyArray();
+    clock.textContent=count;
+    wordCount.textContent='0';
+    pointsBoard.textContent=points;
     clock.classList.remove('fadeInOut');
     clock.classList.remove('red');
     userInput.value = '';
@@ -140,24 +236,50 @@ function restartValues(){
     }else{
         message.classList.remove('green');
     }
+
 }
 
-function restartGame() {
-    stopSound(gameOverAudio);
+function restartGame(divBoard) {
     restartValues();
-    scoreBoardDetails.classList.add('hidden');
+    divBoard.classList.add('hidden');
     gameBoard.classList.remove('hidden');
     startGame();
+}
+
+function cancelGame(divBoard){
+    stopSound(gameOverAudio);
+    divBoard.classList.add('hidden');
+    gameBoard.classList.add('hidden');
+    startGameBoard.classList.remove('hidden');
+    restartValues();
 }
 
 utils.onEvent('keyup',userInput,checkWord);
 utils.onEvent('click',startBtn,startGame);
 utils.onEvent('load',window,copyArray);
-utils.onEvent('click',restartBtn,restartGame);
-utils.onEvent('click',cancelBtn,function(){
-    stopSound(gameOverAudio);
-    scoreBoardDetails.classList.add('hidden');
-    gameBoard.classList.add('hidden');
-    startGameBoard.classList.remove('hidden');
-    restartValues();
-})
+utils.onEvent('click',restartBtn,()=>{
+    restartGame(scoreBoardDetails);
+});
+
+utils.onEvent('click',gameRestartButton,()=>{
+    restartGame(gameBoard);
+});
+
+utils.onEvent('click',hsRestartButton,()=>{
+    restartGame(highScoreTableBoard)
+});
+utils.onEvent('click',cancelBtn,()=>{
+    cancelGame(scoreBoardDetails);
+});
+
+utils.onEvent('click',hsCancelButton,()=>{
+    cancelGame(highScoreTableBoard)
+});
+
+utils.onEvent('click',highScoresTableBtn,()=>{
+    showScoreTable(scoreBoardDetails,'score-table');
+});
+
+utils.onEvent('click',hsStartTableBtn,()=>{
+    showScoreTable(startGameBoard,'start-game');
+});

@@ -17,6 +17,10 @@
                         <p>WORDS</p>
                         <p class="word-count">0</p>                
                     </div>
+                    <div class="time-board flex-center-column">
+                        <p class="clock-title">TIME</p>
+                        <p class="clock" >20</p>
+                    </div>
                     <div class="score-board flex-center-column">
                     <p class="points-title">HIGH SCORE</p>
                     <p class="points-board">0</p>
@@ -25,16 +29,19 @@
             </header>
             <main class="flex-center-column">
                 <div class="flex-center-column">
-                    <div class="start-game-board flex-center-column">
-                        <p> NEW GAME</p>
-                        <button class="start-game-button fadeInOut">Press Start</button>
+                    <div class="start-game-board flex-center-column ">
+                        <p class="gradient-color-text"> NEW GAME</p>
+                        <button class="start-game-button fadeInOut">Press Here</button>
+                        <button class="hs-table-btn"><i class="fa-solid fa-list"></i></button>
                     </div>
-                    <div class="game-board hidden">
+                    <div class="game-board flex-center-column hidden ">
                         <form class="user-game-inputs flex-center-column ">
                             <input type="text"  class="word-board" readonly>
                             <input type="text" class="user-type-input" >
                         </form>
+                        <button class="game-restart-btn">Restart</button>
                     </div>
+
                     <div class="score-board-details hidden">
                         <p class="message"></p>
                         <h2>Score details</h2>
@@ -43,16 +50,24 @@
                         <p> Percentage: <span class="percentage"> </span></p>
                         <div class="buttons-score-board-details">
                             <button class="restart-btn"><i class="fa-solid fa-arrow-rotate-right"></i></button>
+                            <button class="high-scores-table-btn"><i class="fa-solid fa-list"></i></button>
                             <button class="cancel-btn"><i class="fa-solid fa-xmark"></i></button>
                         </div>
+                    </div>
+
+                    <div class="high-scores-board flex-center-column hidden">
+                        <table class="high-scores-table">
+                        </table>
+                        <p class="no-score-message"></p>  
+                        <div class="buttons-score-board-details ">
+                            <button class="hs-restart-btn "><i class="fa-solid fa-arrow-rotate-right"></i></button>
+                            <button class="hs-cancel-btn"><i class="fa-solid fa-xmark"></i></button>
+                        </div>  
                     </div>
                 </div>
             </main>
             <footer>
-                    <div class="time-board flex-center-column">
-                        <p class="clock-title">TIME</p>
-                        <p class="clock" >99</p>
-                    </div>
+
             </footer>
         </div>
     </body>
